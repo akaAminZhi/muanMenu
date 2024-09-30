@@ -1,6 +1,8 @@
 import { HiXMark } from "react-icons/hi2";
 
 function Item({ iterms, handleOnClick, type, hasButton = true }) {
+  // const hasNotItem = iterms.length && iterms[0] === "";
+  // console.log("haha", iterms);
   return (
     <>
       {iterms &&

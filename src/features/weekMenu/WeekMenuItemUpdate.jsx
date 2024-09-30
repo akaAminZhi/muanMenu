@@ -1,10 +1,9 @@
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useReducer, useRef, useState } from "react";
 import { updateMenu } from "../../services/apiMenu";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { format, parseISO } from "date-fns";
 import Button from "../../ui/Button";
-import { HiXMark, HiOutlinePlusSmall, HiCheck } from "react-icons/hi2";
+import { HiOutlinePlusSmall, HiCheck } from "react-icons/hi2";
 import Modal from "../../ui/Modal";
 import Item from "../../ui/Item";
 
@@ -17,12 +16,15 @@ function reducer(state, action) {
         .split(/[+， ]/)
         .filter((item) => item !== action.payload)
         .join("+");
-      console.log(newMonrning);
+      // console.log(newMonrning);
       return { ...state, morning: newMonrning };
     case "addMorningItem":
       return {
         ...state,
-        morning: [...state.morning.split(/[+， ]/), action.payload].join("+"),
+        morning: [
+          ...state.morning.split(/[+， ]/).filter((item) => item !== ""),
+          action.payload,
+        ].join("+"),
       };
     case "editNoon":
       return { ...state, noon: action.payload };
@@ -37,7 +39,10 @@ function reducer(state, action) {
     case "addNoonItem":
       return {
         ...state,
-        noon: [...state.noon.split(/[+， ]/), action.payload].join("+"),
+        noon: [
+          ...state.noon.split(/[+， ]/).filter((item) => item !== ""),
+          action.payload,
+        ].join("+"),
       };
     case "editEvening":
       return { ...state, evening: action.payload };
@@ -52,7 +57,10 @@ function reducer(state, action) {
     case "addEveningItem":
       return {
         ...state,
-        evening: [...state.evening.split(/[+， ]/), action.payload].join("+"),
+        evening: [
+          ...state.evening.split(/[+， ]/).filter((item) => item !== ""),
+          action.payload,
+        ].join("+"),
       };
     case "editBringToOffice":
       return { ...state, bringToOffice: action.payload };
@@ -68,7 +76,7 @@ function reducer(state, action) {
       return {
         ...state,
         bringToOffice: [
-          ...state.bringToOffice.split(/[+， ]/),
+          ...state.bringToOffice.split(/[+， ]/).filter((item) => item !== ""),
           action.payload,
         ].join("+"),
       };
@@ -104,11 +112,23 @@ function WeekMenuItemUpdate({ menu }) {
     },
   });
 
-  const morning = state.morning.split("+");
-  const noon = state.noon.split(/[+， ]/);
-  const evening = state.evening.split(/[+， ]/);
-  const bringToOffice = state.bringToOffice.split(/[+， ]/);
+  const morning =
+    state.morning.split(/[+， ]/)[0] === ""
+      ? []
+      : state.morning.split(/[+， ]/);
+  const noon =
+    state.noon.split(/[+， ]/)[0] === "" ? [] : state.noon.split(/[+， ]/);
+  const evening =
+    state.evening.split(/[+， ]/)[0] === ""
+      ? []
+      : state.evening.split(/[+， ]/);
 
+  const bringToOffice =
+    state.bringToOffice.split(/[+， ]/)[0] === ""
+      ? []
+      : state.bringToOffice.split(/[+， ]/);
+  // console.log(morning.length && morning[0] === "");
+  // console.log(state.noon.split(/[+， ]/));
   function handleAddItem(type) {
     dispatch({ type: type, payload: addItem });
     setAddItem("");
@@ -167,20 +187,31 @@ function WeekMenuItemUpdate({ menu }) {
 
       <div className="m-2 flex flex-col gap-2 sm:flex-row sm:items-center">
         <label className="sm:basis-40">Evening</label>
-        <input
-          className="input grow rounded-xl px-2"
-          type="text"
-          id="evening"
-          value={state.evening}
-          onChange={(e) =>
-            dispatch({ type: "editEvening", payload: e.target.value })
-          }
-        />
+        <Item
+          iterms={evening}
+          handleOnClick={handleOnClick}
+          type={"deleteEveningItem"}
+        ></Item>
+        <UpdateModal
+          addItem={addItem}
+          setAddItem={setAddItem}
+          handleAddItem={() => handleAddItem("addEveningItem")}
+        ></UpdateModal>
       </div>
 
       <div className="m-2 flex flex-col gap-2 sm:flex-row sm:items-center">
         <label className="sm:basis-40">Bring to Office</label>
-        <input
+        <Item
+          iterms={bringToOffice}
+          handleOnClick={handleOnClick}
+          type={"deleteBringToOfficeItem"}
+        ></Item>
+        <UpdateModal
+          addItem={addItem}
+          setAddItem={setAddItem}
+          handleAddItem={() => handleAddItem("addBringToOfficeItem")}
+        ></UpdateModal>
+        {/* <input
           className="input grow rounded-xl px-2"
           type="text"
           id="bringToOffice"
@@ -188,7 +219,7 @@ function WeekMenuItemUpdate({ menu }) {
           onChange={(e) =>
             dispatch({ type: "editBringToOffice", payload: e.target.value })
           }
-        />
+        /> */}
       </div>
       <div className=" flex justify-around">
         <Button disabled={isUpdating} type="primary" onClick={handleEdit}>

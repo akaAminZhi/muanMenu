@@ -3,18 +3,17 @@ import { useState } from "react";
 import Modal from "../../ui/Modal";
 import Button from "../../ui/Button";
 import WeekMenuItemUpdate from "./WeekMenuItemUpdate";
-import Item from "../../ui/Item";
 
 function WeekMenuItemClapesVersion({ menu }) {
   const [showDetail, setShowDetail] = useState(false);
   const itemStyle = "";
   const menuItemStyle = "flex gap-x-1";
 
-  const morning = menu.morning.split("+");
+  const morning = menu.morning.split(/[+， ]/).join("，");
   const noon = menu.noon.split(/[+， ]/).join("，");
-  const evening = menu.evening.split(/[+， ]/);
-  const bringToOffice = menu.bringToOffice.split(/[+， ]/);
-  console.log(noon);
+  const evening = menu.evening.split(/[+， ]/).join("，");
+  const bringToOffice = menu.bringToOffice.split(/[+， ]/).join("，");
+  // console.log(noon);
   return (
     <>
       <div className="flex max-w-5xl   px-4 py-2 flex-col">
@@ -31,7 +30,7 @@ function WeekMenuItemClapesVersion({ menu }) {
         {showDetail && (
           <div className="grow">
             <div className={menuItemStyle}>
-              🥐 Moring:
+              🥐 Moring:<span>{morning}</span>
               {/* {morning &&
                 morning.map((item) => (
                   <span
@@ -43,7 +42,7 @@ function WeekMenuItemClapesVersion({ menu }) {
                     {item}
                   </span>
                 ))} */}
-              <Item iterms={morning} hasButton={false}></Item>
+              {/* <Item iterms={morning} hasButton={false}></Item> */}
             </div>
             <div className={menuItemStyle}>
               🍚 Noon:<span>{noon}</span>
@@ -60,11 +59,12 @@ function WeekMenuItemClapesVersion({ menu }) {
               {/* <Item iterms={noon} hasButton={false}></Item> */}
             </div>
             <div className={menuItemStyle}>
-              🎃 Evening: <Item iterms={evening} hasButton={false}></Item>
+              🎃 Evening: <span>{evening}</span>
+              {/* <Item iterms={evening} hasButton={false}></Item> */}
             </div>
             <div className={menuItemStyle}>
-              🥙 Bring to Office:{" "}
-              <Item iterms={bringToOffice} hasButton={false}></Item>
+              🥙 Bring to Office:<span>{bringToOffice}</span>
+              {/* <Item iterms={bringToOffice} hasButton={false}></Item> */}
             </div>
             <div className="flex justify-center">
               <Modal>
